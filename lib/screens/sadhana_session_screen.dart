@@ -44,7 +44,7 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
       setState(() {
         _isPlaying = false;
         _showMantra = false;
-        _counter++; // Increment counter when audio completes
+        _counter++;
       });
 
       if (_counter == 108) {
@@ -72,15 +72,60 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
   void _showCompletionDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sadhana Complete!'),
-        content: Text('Completed 108 chants of ${widget.deityName}'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.black.withOpacity(0.9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(
+            color: Colors.deepOrange,
+            width: 2,
           ),
-        ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 60,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Sadhana Complete!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Congratulations You Have Completed 108 chants of ${widget.deityName}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepOrange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'Jai Bhairav',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -96,32 +141,51 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.deityName),
+        backgroundColor: Colors.black,
       ),
+      backgroundColor: Colors.black,
       body: Column(
         children: [
           Expanded(
             flex: 3,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(
-                  widget.deityImage,
-                  fit: BoxFit.cover,
-                ),
-                if (_showMantra)
-                  Container(
-                    color: Colors.black.withOpacity(0.7),
-                    alignment: Alignment.center,
-                    child: Text(
-                      widget.mantraText,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.deepOrange.withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 5,
                   ),
-              ],
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      widget.deityImage,
+                      fit: BoxFit.cover,
+                    ),
+                    if (_showMantra)
+                      Container(
+                        color: Colors.black.withOpacity(0.7),
+                        alignment: Alignment.center,
+                        child: Text(
+                          widget.mantraText,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
           Expanded(
@@ -130,19 +194,58 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    '$_counter / 108',
-                    style: const TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 150,
+                        height: 150,
+                        child: CircularProgressIndicator(
+                          value: _counter / 108,
+                          strokeWidth: 10,
+                          backgroundColor: Colors.grey.withOpacity(0.2),
+                          color: Colors.deepOrange,
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '$_counter',
+                            style: const TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Text(
+                            'of 108',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: _playMantra,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 16),
+                      backgroundColor: Colors.deepOrange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                     child: Text(
                       _isPlaying ? 'Chanting...' : 'Chant Mantra',
-                      style: const TextStyle(fontSize: 24),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
