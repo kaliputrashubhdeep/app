@@ -54,7 +54,7 @@ class WelcomeScreen extends StatelessWidget {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Bhairava Kalike Namastute',
                       style: TextStyle(
@@ -85,7 +85,7 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Begin Sadhana',
+                  'Begin Naama Japa', // Changed from 'Begin Sadhana'
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
