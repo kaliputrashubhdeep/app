@@ -24,6 +24,7 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
   bool _showMantra = false;
+  bool _showGlow = false;
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
       setState(() {
         _isPlaying = state == PlayerState.playing;
         _showMantra = _isPlaying;
+        _showGlow = _isPlaying;
       });
     });
 
@@ -44,6 +46,7 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
       setState(() {
         _isPlaying = false;
         _showMantra = false;
+        _showGlow = false;
         _counter++;
       });
 
@@ -72,15 +75,60 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
   void _showCompletionDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sadhana Complete!'),
-        content: Text('Completed 108 chants of ${widget.deityName}'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.black.withOpacity(0.9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(
+            color: Colors.deepOrange,
+            width: 2,
           ),
-        ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 60,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Sadhana Complete!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Completed 108 chants of ${widget.deityName}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepOrange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'Jai Bhairav',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -101,46 +149,77 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
+          // Divine Image with Glow Effect
           Expanded(
             flex: 3,
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.deepOrange.withOpacity(0.3),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
+                boxShadow: _showGlow
+                    ? [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.8),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                        ),
+                        BoxShadow(
+                          color: Colors.deepOrange.withOpacity(0.6),
+                          blurRadius: 50,
+                          spreadRadius: 10,
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: Colors.deepOrange.withOpacity(0.3),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                        ),
+                      ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  widget.deityImage,
-                  fit: BoxFit.cover,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      widget.deityImage,
+                      fit: BoxFit.cover,
+                    ),
+                    if (_showMantra)
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.5),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          // Mantra at feet during chanting
+          // Mantra at Feet
           if (_showMantra)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.7),
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(20),
-                ),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 widget.mantraText,
                 style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 26,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -148,25 +227,67 @@ class _SadhanaSessionScreenState extends State<SadhanaSessionScreen> {
               ),
             ),
 
+          // Counter and Button Section
           Expanded(
             flex: 2,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    '$_counter / 108',
-                    style: const TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 140,
+                        height: 140,
+                        child: CircularProgressIndicator(
+                          value: _counter / 108,
+                          strokeWidth: 10,
+                          backgroundColor: Colors.grey.withOpacity(0.2),
+                          color: Colors.deepOrange,
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '$_counter',
+                            style: const TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Text(
+                            'of 108',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: _playMantra,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 16),
+                      backgroundColor:
+                          _isPlaying ? Colors.orange[800] : Colors.deepOrange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 8,
+                    ),
                     child: Text(
                       _isPlaying ? 'Chanting...' : 'Chant Mantra',
-                      style: const TextStyle(fontSize: 24),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

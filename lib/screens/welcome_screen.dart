@@ -54,7 +54,7 @@ class WelcomeScreen extends StatelessWidget {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Text(
                       'Bhairava Kalike Namastute',
                       style: TextStyle(
